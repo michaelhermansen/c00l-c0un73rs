@@ -123,6 +123,20 @@ function initEditPage() {
         };
     }
 
+    function formToSave() {
+        const values = readForm();
+        // an untouched theme is saved as empty css so it keeps following the theme
+        if (!hasCustomCss()) values.css = "";
+        return values;
+    }
+
+    let savedForm = JSON.stringify(formToSave());
+
+    function showUnsavedChanges() {
+        const hasUnsavedChanges = JSON.stringify(formToSave()) !== savedForm;
+        status.textContent = hasUnsavedChanges ? messages.unsavedChanges : "";
+    }
+
     function fillForm(counter) {
         const savedThemeInput = themeInput(counter.theme);
         if (savedThemeInput) {
@@ -134,6 +148,7 @@ function initEditPage() {
         cssField.value = counter.css || themeCss(selectedTheme);
         resetButton.hidden = !hasCustomCss();
         if (hasCustomCss()) form.querySelector("details").open = true;
+        savedForm = JSON.stringify(formToSave());
     }
 
     async function refreshPreview() {
@@ -151,9 +166,8 @@ function initEditPage() {
     }
 
     async function saveCounter() {
-        const { count, ...config } = readForm();
-        // an untouched theme is saved as empty css so it keeps following the theme
-        if (!hasCustomCss()) config.css = "";
+        const formAtSave = formToSave();
+        const { count, ...config } = formAtSave;
         // sending an untouched count would overwrite hits that arrived while editing
         const changes = countWasEdited ? { ...config, count } : config;
         const response = await sendJson(
@@ -164,6 +178,7 @@ function initEditPage() {
         );
         if (!response.ok) throw new Error(await errorMessage(response));
         countWasEdited = false;
+        savedForm = JSON.stringify(formAtSave);
         return messages.saved;
     }
 
@@ -185,7 +200,7 @@ function initEditPage() {
         if (event.target.name === "count") countWasEdited = true;
         if (event.target.name === "theme") changeTheme(event.target);
         resetButton.hidden = !hasCustomCss();
-        status.textContent = "";
+        showUnsavedChanges();
         // an unchanged live region would stay silent on the next reset
         resetStatus.textContent = "";
         schedulePreview();
@@ -196,6 +211,7 @@ function initEditPage() {
         useThemeCss();
         cssField.focus();
         resetStatus.textContent = messages.changesRemoved;
+        showUnsavedChanges();
         schedulePreview();
     });
 
