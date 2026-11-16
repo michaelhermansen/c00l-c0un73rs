@@ -1,7 +1,11 @@
 import { DEFAULT_MIN_DIGITS, MAX_MIN_DIGITS, MIN_MIN_DIGITS } from "../render";
 import { messages, type Locale } from "../i18n";
 import { defaultTheme, themeList } from "../themes";
-import { MAX_COUNT, MAX_CSS_LENGTH } from "../validate";
+import {
+    MAX_ALLOWED_DOMAINS_LENGTH,
+    MAX_COUNT,
+    MAX_CSS_LENGTH,
+} from "../validate";
 import { Layout } from "./layout";
 
 export function EditorPage({
@@ -102,6 +106,26 @@ export function EditorPage({
                         {t.resetStyles}
                     </button>
                 </div>
+
+                <fieldset>
+                    <legend>{t.domainLock}</legend>
+                    <label>
+                        {t.allowedDomains}
+                        <input
+                            type="text"
+                            name="allowedDomains"
+                            placeholder="example.com, example.org"
+                            maxlength={MAX_ALLOWED_DOMAINS_LENGTH}
+                            aria-describedby="allowed-domains-hint"
+                            spellcheck={false}
+                            autocapitalize="off"
+                            autocorrect="off"
+                        />
+                    </label>
+                    <p id="allowed-domains-hint" class="hint">
+                        {t.allowedDomainsHint}
+                    </p>
+                </fieldset>
 
                 <button type="submit" class="primary">
                     {t.saveChanges}

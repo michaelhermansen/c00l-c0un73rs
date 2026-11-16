@@ -349,6 +349,11 @@ button.primary {
     display: none;
 }
 
+.hint {
+    margin: 8px 0 0;
+    font-size: 13px;
+}
+
 .warning {
     margin: 0;
     padding: 8px;

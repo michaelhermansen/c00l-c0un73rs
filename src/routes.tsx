@@ -4,9 +4,10 @@ import { EditorPage } from './pages/editor-page'
 import { LANGS, readLocale } from './i18n'
 import { HomePage } from './pages/home-page'
 import { NotFoundPage } from './pages/not-found-page'
-import { DEFAULT_MIN_DIGITS, MAX_MIN_DIGITS, renderCounter } from './render'
+import { accessFor, hostOf } from './domain-lock'
+import { DEFAULT_MIN_DIGITS, MAX_MIN_DIGITS, renderCounter, renderLockedCounter } from './render'
 import { SITE_COUNTER_ID } from './site-counter'
-import type { CounterStore } from './store'
+import type { CounterStore, Visit } from './store'
 import { defaultTheme, themeList, themes } from './themes'
 import { generateId, generateToken, hashToken } from './token'
 import { validateCounterInput } from './validate'
@@ -44,11 +45,20 @@ function randomTheme() {
   return themeList[Math.floor(Math.random() * themeList.length)]
 }
 
+const NEW_SITE_COUNTER = { theme: defaultTheme.name, css: '', minDigits: MAX_MIN_DIGITS, allowedDomains: '', count: 0 }
+
 async function startSiteCounter(store: CounterStore) {
   // the token is thrown away, so nobody can edit the site's own counter
   const tokenHash = await hashToken(generateToken())
-  await store.create(SITE_COUNTER_ID, { theme: defaultTheme.name, css: '', minDigits: MAX_MIN_DIGITS, count: 0, tokenHash })
-  return store.hit(SITE_COUNTER_ID)
+  await store.create(SITE_COUNTER_ID, { ...NEW_SITE_COUNTER, tokenHash })
+  return store.visit(SITE_COUNTER_ID, null)
+}
+
+// locked to whatever host serves it, so local, preview and production need no setup
+async function visitSiteCounter(store: CounterStore, siteHost: string, visitorHost: string | null): Promise<Visit | null> {
+  const access = accessFor(siteHost, visitorHost)
+  if (access === 'counted') return (await store.visit(SITE_COUNTER_ID, null)) ?? startSiteCounter(store)
+  return { counter: (await store.get(SITE_COUNTER_ID)) ?? NEW_SITE_COUNTER, access }
 }
 
 export function createApp(getStore: () => CounterStore) {
@@ -71,8 +81,14 @@ export function createApp(getStore: () => CounterStore) {
 
   app.get('/c/:file', async (c) => {
     const id = c.req.param('file').replace(/\.svg$/, '')
-    const counter = (await getStore().hit(id)) ?? (id === SITE_COUNTER_ID ? await startSiteCounter(getStore()) : null)
-    if (!counter) return c.text('counter not found', 404)
+    const visitorHost = hostOf(c.req.header('Referer'))
+    const visit =
+      id === SITE_COUNTER_ID
+        ? await visitSiteCounter(getStore(), new URL(c.req.url).hostname, visitorHost)
+        : await getStore().visit(id, visitorHost)
+    if (!visit) return c.text('counter not found', 404)
+    if (visit.access === 'locked') return svgResponse(c, renderLockedCounter())
+    const { counter } = visit
     const theme = id === SITE_COUNTER_ID ? randomTheme() : (themes[counter.theme] ?? defaultTheme)
     return svgResponse(c, renderCounter(counter.count, theme, counter))
   })
@@ -98,6 +114,7 @@ export function createApp(getStore: () => CounterStore) {
       theme: defaultTheme.name,
       css: '',
       minDigits: DEFAULT_MIN_DIGITS,
+      allowedDomains: '',
       count: 0,
       ...validation.changes,
       tokenHash: await hashToken(token),
@@ -112,8 +129,9 @@ export function createApp(getStore: () => CounterStore) {
   app.get('/api/counters/:id', async (c) => {
     const counter = await getStore().get(c.req.param('id'))
     if (!counter) return c.json({ error: 'counter not found' }, 404)
-    const { tokenHash, ...publicState } = counter
-    return c.json(publicState)
+    const { tokenHash, allowedDomains, ...publicState } = counter
+    // the domains tell where else the owner publishes, so only the owner gets them
+    return c.json((await isValidToken(c, tokenHash)) ? { ...publicState, allowedDomains } : publicState)
   })
 
   app.get('/api/counters/:id/access', async (c) => {

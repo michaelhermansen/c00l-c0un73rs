@@ -1,16 +1,32 @@
 import { Redis } from '@upstash/redis'
+import type { Access } from './domain-lock'
 import type { CounterState, CounterStore, StoredCounter } from './store'
 
 // counters nobody loads for this long are dropped by redis
 const INACTIVE_TTL_SECONDS = 365 * 24 * 60 * 60
 
-// one round trip per hit, and unknown ids never create keys
-const HIT_SCRIPT = `
+// one round trip per visit, and unknown ids never create keys
+// the access rules mirror accessFor in domain-lock.ts
+const VISIT_SCRIPT = `
 if redis.call('EXISTS', KEYS[1]) == 0 then return false end
-local count = redis.call('HINCRBY', KEYS[1], 'count', 1)
-redis.call('EXPIRE', KEYS[1], ARGV[1])
+local allowed = redis.call('HGET', KEYS[1], 'allowedDomains') or ''
+local host = ARGV[2]
+local access = 'counted'
+if allowed ~= '' then
+  access = host == '' and 'shown' or 'locked'
+  for domain in string.gmatch(allowed, '%S+') do
+    if host == domain or string.sub(host, -(#domain + 1)) == '.' .. domain then access = 'counted' end
+  end
+end
+local count
+if access == 'counted' then
+  count = redis.call('HINCRBY', KEYS[1], 'count', 1)
+else
+  count = tonumber(redis.call('HGET', KEYS[1], 'count'))
+end
+if access ~= 'locked' then redis.call('EXPIRE', KEYS[1], ARGV[1]) end
 local config = redis.call('HMGET', KEYS[1], 'theme', 'css', 'minDigits')
-return { count, config[1], config[2], config[3] }
+return { count, config[1], config[2], config[3], access }
 `
 
 const keyFor = (id: string) => `counter:${id}`
@@ -41,11 +57,13 @@ export function createUpstashStore(): CounterStore {
       await Promise.all([redis.hset(keyFor(id), toFields(counter)), redis.expire(keyFor(id), INACTIVE_TTL_SECONDS)])
       return true
     },
-    async hit(id) {
-      const result = (await redis.eval(HIT_SCRIPT, [keyFor(id)], [String(INACTIVE_TTL_SECONDS)])) as [number, string, string, string] | null
+    async visit(id, visitorHost) {
+      const result = (await redis.eval(VISIT_SCRIPT, [keyFor(id)], [String(INACTIVE_TTL_SECONDS), visitorHost ?? ''])) as
+        | [number, string, string, string, Access]
+        | null
       if (!result) return null
-      const [count, theme, css, minDigits] = result
-      return { count: Number(count), theme, css: css ?? '', minDigits: Number(minDigits) }
+      const [count, theme, css, minDigits, access] = result
+      return { counter: { count: Number(count), theme, css: css ?? '', minDigits: Number(minDigits) }, access }
     },
     async get(id) {
       const fields = toRecord(((await redis.hgetall(keyFor(id))) as unknown as string[] | null) ?? [])
@@ -55,6 +73,7 @@ export function createUpstashStore(): CounterStore {
         theme: fields.theme,
         css: fields.css ?? '',
         minDigits: Number(fields.minDigits),
+        allowedDomains: fields.allowedDomains ?? '',
         tokenHash: fields.tokenHash,
       }
     },

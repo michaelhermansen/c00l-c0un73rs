@@ -56,16 +56,76 @@ describe('counting', () => {
   })
 })
 
+describe('domain lock', () => {
+  const load = async (id: string, referer?: string) =>
+    (await app.request(`/c/${id}.svg`, referer ? { headers: { Referer: referer } } : {})).text()
+
+  it('counts on the allowed domain and its subdomains', async () => {
+    const { id } = await createCounter({ minDigits: 4, allowedDomains: 'example.com' })
+    expect(await load(id, 'https://example.com/')).toContain('aria-label="0001"')
+    expect(await load(id, 'https://www.example.com/page')).toContain('aria-label="0002"')
+  })
+
+  it.each(['https://thief.test/', 'https://notexample.com/', 'https://example.com.thief.test/'])(
+    'shows a locked image without counting on %s',
+    async (referer) => {
+      const { id } = await createCounter({ minDigits: 4, allowedDomains: 'example.com' })
+      const svg = await load(id, referer)
+      expect(svg).toContain('counter locked')
+      expect(svg).not.toContain('aria-label="0001"')
+      expect(await load(id, 'https://example.com/')).toContain('aria-label="0001"')
+    },
+  )
+
+  it('shows the count without counting when the referrer is missing', async () => {
+    const { id } = await createCounter({ minDigits: 4, count: 7, allowedDomains: 'example.com' })
+    expect(await load(id)).toContain('aria-label="0007"')
+    expect(await load(id, 'not a url')).toContain('aria-label="0007"')
+    expect(await load(id, 'https://example.com/')).toContain('aria-label="0008"')
+  })
+
+  it('counts everywhere when no domains are set', async () => {
+    const { id } = await createCounter({ minDigits: 4 })
+    expect(await load(id, 'https://anywhere.test/')).toContain('aria-label="0001"')
+    expect(await load(id)).toContain('aria-label="0002"')
+  })
+
+  it('stores pasted addresses as plain domains and shows them only to the owner', async () => {
+    const { id, token } = await createCounter({ allowedDomains: 'https://www.Example.com/page, blog.example.org:8080\n*.example.net' })
+    const state = async (headers: Record<string, string> = {}) =>
+      (await (await app.request(`/api/counters/${id}`, { headers })).json()) as Record<string, unknown>
+    expect((await state({ Authorization: `Bearer ${token}` })).allowedDomains).toBe('example.com blog.example.org example.net')
+    expect(await state()).not.toHaveProperty('allowedDomains')
+  })
+
+  it('can be unlocked again', async () => {
+    const { id, token } = await createCounter({ minDigits: 4, allowedDomains: 'example.com' })
+    await app.request(`/api/counters/${id}`, json('PUT', { allowedDomains: '' }, { Authorization: `Bearer ${token}` }))
+    expect(await load(id, 'https://thief.test/')).toContain('aria-label="0001"')
+  })
+})
+
 describe('site counter', () => {
+  const loadSiteCounter = async (referer?: string) =>
+    (await app.request('http://site.test/c/site.svg', referer ? { headers: { Referer: referer } } : {})).text()
+
   it('starts itself on the first visit and counts from there', async () => {
-    expect(await (await app.request('/c/site.svg')).text()).toContain('aria-label="000000000001"')
-    expect(await (await app.request('/c/site.svg')).text()).toContain('aria-label="000000000002"')
+    expect(await loadSiteCounter('http://site.test/')).toContain('aria-label="000000000001"')
+    expect(await loadSiteCounter('http://site.test/no')).toContain('aria-label="000000000002"')
+  })
+
+  it('is locked to the site itself', async () => {
+    expect(await loadSiteCounter('https://thief.test/')).toContain('counter locked')
+    expect(await loadSiteCounter()).toContain('aria-label="000000000000"')
+    await loadSiteCounter('http://site.test/')
+    expect(await loadSiteCounter('https://thief.test/')).toContain('counter locked')
+    expect(await loadSiteCounter()).toContain('aria-label="000000000001"')
   })
 
   it('shows a different theme from one load to the next', async () => {
     const stylesheets = new Set<string>()
     for (let load = 0; load < 60; load++) {
-      const svg = await (await app.request('/c/site.svg')).text()
+      const svg = await loadSiteCounter('http://site.test/')
       stylesheets.add(svg.slice(svg.indexOf('<style>'), svg.indexOf('</style>')))
     }
     expect(stylesheets.size).toBeGreaterThan(1)
@@ -96,6 +156,9 @@ describe('creating', () => {
     ['too many digits', { minDigits: 99 }],
     ['too few digits', { minDigits: 3 }],
     ['negative count', { count: -1 }],
+    ['invalid domain', { allowedDomains: 'exa_mple.com' }],
+    ['domains that are not text', { allowedDomains: ['example.com'] }],
+    ['too many domains', { allowedDomains: Array.from({ length: 11 }, (_, i) => `site${i}.test`).join(' ') }],
   ])('rejects %s', async (_name, body) => {
     expect((await createCounter(body)).response.status).toBe(400)
   })

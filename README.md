@@ -8,6 +8,8 @@ Visitor counters for web sites. Create a counter and embed it with an `<img>` ta
 /></a>
 ```
 
+A counter can be locked to a list of domains in the editor. It then only counts image loads whose `Referer` is one of those domains or a subdomain, shows a "locked" image on other sites, and shows the count without counting when there is no referrer. Scripts can fake the header, so this stops embedding on other sites, not deliberate inflation.
+
 ## Run locally
 
 Requires [Bun](https://bun.sh).

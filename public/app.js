@@ -120,6 +120,7 @@ function initEditPage() {
             css: data.get("css"),
             minDigits: Number(data.get("minDigits")),
             count: Number(data.get("count")),
+            allowedDomains: data.get("allowedDomains"),
         };
     }
 
@@ -149,6 +150,9 @@ function initEditPage() {
         }
         form.elements.minDigits.value = counter.minDigits;
         form.elements.count.value = counter.count;
+        form.elements.allowedDomains.value = (
+            counter.allowedDomains ?? ""
+        ).replaceAll(" ", ", ");
         cssField.value = counter.css || themeCss(selectedTheme);
         resetButton.hidden = !hasCustomCss();
         if (hasCustomCss()) form.querySelector("details").open = true;
@@ -156,7 +160,9 @@ function initEditPage() {
     }
 
     async function refreshPreview() {
-        const response = await sendJson("/api/preview", "POST", readForm());
+        // a half-typed domain must not block the preview
+        const { allowedDomains, ...look } = readForm();
+        const response = await sendJson("/api/preview", "POST", look);
         if (!response.ok) return;
         const nextUrl = URL.createObjectURL(await response.blob());
         preview.src = nextUrl;
@@ -191,7 +197,9 @@ function initEditPage() {
             `<a href="${location.origin}/"><img src="${location.origin}/c/${counterId}.svg" alt="${messages.embedAlt}"></a>`;
         document.querySelector("#edit-link").value = location.href;
 
-        const response = await fetch(`/api/counters/${counterId}`);
+        const response = await fetch(`/api/counters/${counterId}`, {
+            headers: authorization(editToken),
+        });
         if (!response.ok) {
             status.textContent = await errorMessage(response);
             return;
@@ -203,6 +211,10 @@ function initEditPage() {
     form.addEventListener("input", (event) => {
         if (event.target.name === "count") countWasEdited = true;
         if (event.target.name === "theme") changeTheme(event.target);
+        if (event.target.name === "allowedDomains") {
+            showUnsavedChanges();
+            return;
+        }
         resetButton.hidden = !hasCustomCss();
         showUnsavedChanges();
         // an unchanged live region would stay silent on the next reset

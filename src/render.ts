@@ -100,6 +100,16 @@ function renderDigit(digit: string, x: number, y: number, theme: Theme, polygons
   )
 }
 
+export function renderLockedCounter(): string {
+  const label = 'counter locked to another site'
+  return (
+    `<svg xmlns="http://www.w3.org/2000/svg" width="230" height="40" viewBox="0 0 230 40" role="img" aria-label="${label}">` +
+    `<rect width="230" height="40" fill="#c0c0c0" stroke="#808080" stroke-width="2"/>` +
+    `<text x="115" y="20" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="13">${label}</text>` +
+    `</svg>`
+  )
+}
+
 export function clampMinDigits(minDigits: number): number {
   return Math.min(MAX_MIN_DIGITS, Math.max(MIN_MIN_DIGITS, Math.trunc(minDigits)))
 }
