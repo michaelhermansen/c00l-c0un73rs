@@ -15,6 +15,13 @@ function toFields(changes: Partial<StoredCounter>): Record<string, string> {
   return Object.fromEntries(Object.entries(changes).map(([field, value]) => [field, String(value)]))
 }
 
+// with automaticDeserialization off, hgetall replies as [field, value, field, value, ...]
+function toRecord(flatFields: string[]): Record<string, string> {
+  const record: Record<string, string> = {}
+  for (let i = 0; i < flatFields.length; i += 2) record[flatFields[i]] = flatFields[i + 1]
+  return record
+}
+
 export function createUpstashStore(): CounterStore {
   const url = process.env.UPSTASH_REDIS_REST_URL ?? process.env.KV_REST_API_URL
   const token = process.env.UPSTASH_REDIS_REST_TOKEN ?? process.env.KV_REST_API_TOKEN
@@ -37,8 +44,8 @@ export function createUpstashStore(): CounterStore {
       return { count: Number(count), theme, css: css ?? '', minDigits: Number(minDigits) }
     },
     async get(id) {
-      const fields = await redis.hgetall<Record<string, string>>(keyFor(id))
-      if (!fields || !fields.tokenHash) return null
+      const fields = toRecord(((await redis.hgetall(keyFor(id))) as unknown as string[] | null) ?? [])
+      if (!fields.tokenHash) return null
       return {
         count: Number(fields.count),
         theme: fields.theme,
