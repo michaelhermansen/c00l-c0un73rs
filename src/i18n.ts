@@ -18,10 +18,10 @@ export const LANG_NAMES: Record<Lang, string> = { en: 'English', no: 'Norsk' }
 const NORWEGIAN_COUNTRIES = ['NO', 'SJ']
 
 const en = {
-  homeTitle: 'Visitor counter for your web site',
+  homeTitle: 'Hit counter for your web site',
   homeTagline: 'Get a cool counter for your web site',
-  createHeading: 'Create a new counter',
-  createIntro: 'Select a theme and customize it on the next page.',
+  createHeading: 'Create a new hit counter',
+  createIntro: 'You get a code snippet that you can add to your web site.',
   createButton: 'Create counter',
   openHeading: 'Edit an existing counter',
   openLabel: 'Your edit link',
@@ -66,7 +66,7 @@ const en = {
     saved: 'Saved.',
     unsavedChanges: 'Unsaved changes.',
     changesRemoved: 'Custom changes removed.',
-    embedAlt: 'visitor counter',
+    embedAlt: 'hit counter',
   },
 }
 
@@ -75,8 +75,8 @@ export type Messages = typeof en
 const no: Messages = {
   homeTitle: 'Besøksteller for nettstedet ditt',
   homeTagline: 'Skaff en kul teller til nettstedet ditt',
-  createHeading: 'Lag en ny teller',
-  createIntro: 'Velg et tema og tilpass det på neste side.',
+  createHeading: 'Lag en ny besøksteller',
+  createIntro: 'Du får en kodesnutt som du kan legge til på nettstedet ditt.',
   createButton: 'Lag teller',
   openHeading: 'Rediger en eksisterende teller',
   openLabel: 'Redigeringslenken din',

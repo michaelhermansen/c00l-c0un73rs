@@ -238,15 +238,15 @@ describe('pages', () => {
     const page = async (country: string) =>
       (await app.request('/', { headers: { 'x-vercel-ip-country': country } })).text()
     expect(await page('NO')).toContain('<html lang="nb">')
-    expect(await page('NO')).toContain('Lag en ny teller')
+    expect(await page('NO')).toContain('Lag en ny besøksteller')
     expect(await page('DE')).toContain('<html lang="en">')
-    expect(await page('DE')).toContain('Create a new counter')
+    expect(await page('DE')).toContain('Create a new hit counter')
   })
 
   it('lets a language in the url win over the ip address', async () => {
     const html = await (await app.request('/en', { headers: { 'x-vercel-ip-country': 'NO' } })).text()
-    expect(html).toContain('Create a new counter')
-    expect(await (await app.request('/no')).text()).toContain('Lag en ny teller')
+    expect(html).toContain('Create a new hit counter')
+    expect(await (await app.request('/no')).text()).toContain('Lag en ny besøksteller')
   })
 
   it('links to the same page in the other language', async () => {

@@ -1,10 +1,10 @@
 # c00l c0un73rz
 
-Visitor counters for web sites. Create a counter and embed it with an `<img>` tag that links back to the home page. It goes up by 1 on every page load. No accounts: each counter gets a secret edit link.
+Hit counters for web sites. Create a counter and embed it with an `<img>` tag that links back to the home page. It goes up by 1 on every page load. No accounts: each counter gets a secret edit link.
 
 ```html
 <a href="https://<your-domain>/"
-    ><img src="https://<your-domain>/c/<id>.svg" alt="visitor counter"
+    ><img src="https://<your-domain>/c/<id>.svg" alt="hit counter"
 /></a>
 ```
 
