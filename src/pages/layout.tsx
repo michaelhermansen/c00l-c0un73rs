@@ -36,7 +36,10 @@ export function Layout({
                 />
                 <title>{`c001 c0un73rz | ${title}`}</title>
                 <link rel="stylesheet" href="/style.css" />
-                {page !== "not-found" && (
+                {page === "edit" && (
+                    <meta name="robots" content="noindex" />
+                )}
+                {page === "home" && (
                     <>
                         {LANGS.map((lang) => (
                             <link

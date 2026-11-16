@@ -272,6 +272,14 @@ describe('pages', () => {
     expect(await (await app.request('/nope')).text()).not.toContain('hreflang="x-default"')
   })
 
+  it('keeps edit pages out of search engines', async () => {
+    const { id, token } = await createCounter()
+    const editHtml = await (await app.request(`/edit/${id}/${token}`)).text()
+    expect(editHtml).toContain('<meta name="robots" content="noindex"/>')
+    expect(editHtml).not.toContain('rel="alternate"')
+    expect(await (await app.request('/')).text()).not.toContain('noindex')
+  })
+
   it('answers 404 pages in the language of the url', async () => {
     const response = await app.request('/no/nope')
     expect(response.status).toBe(404)
