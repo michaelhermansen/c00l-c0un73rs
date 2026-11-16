@@ -110,10 +110,10 @@ const no: Messages = {
     requestFailed: 'forespørselen feilet',
     notAnEditLink: 'Det ser ikke ut som en redigeringslenke.',
     noCounterFound: 'Fant ingen teller for den redigeringslenken.',
-    confirmThemeChange: 'Du har gjort egne endringer. De blir overskrevet. Fortsette?',
-    confirmReset: 'Du har gjort egne endringer. De blir fjernet. Fortsette?',
+    confirmThemeChange: 'Tilpasningene dine blir overskrevet hvis du bytter tema. Vil du fortsette?',
+    confirmReset: 'Tilpasningene dine blir fjernet. Vil du fortsette?',
     saved: 'Lagret.',
-    changesRemoved: 'Egne endringer fjernet.',
+    changesRemoved: 'Tilpasningene er fjernet.',
     embedAlt: 'besøksteller',
   },
 }
