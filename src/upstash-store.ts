@@ -1,10 +1,14 @@
 import { Redis } from '@upstash/redis'
 import type { CounterState, CounterStore, StoredCounter } from './store'
 
+// counters nobody loads for this long are dropped by redis
+const INACTIVE_TTL_SECONDS = 365 * 24 * 60 * 60
+
 // one round trip per hit, and unknown ids never create keys
 const HIT_SCRIPT = `
 if redis.call('EXISTS', KEYS[1]) == 0 then return false end
 local count = redis.call('HINCRBY', KEYS[1], 'count', 1)
+redis.call('EXPIRE', KEYS[1], ARGV[1])
 local config = redis.call('HMGET', KEYS[1], 'theme', 'css', 'minDigits')
 return { count, config[1], config[2], config[3] }
 `
@@ -34,11 +38,11 @@ export function createUpstashStore(): CounterStore {
     async create(id, counter) {
       const claimed = await redis.hsetnx(keyFor(id), 'tokenHash', counter.tokenHash)
       if (!claimed) return false
-      await redis.hset(keyFor(id), toFields(counter))
+      await Promise.all([redis.hset(keyFor(id), toFields(counter)), redis.expire(keyFor(id), INACTIVE_TTL_SECONDS)])
       return true
     },
     async hit(id) {
-      const result = (await redis.eval(HIT_SCRIPT, [keyFor(id)], [])) as [number, string, string, string] | null
+      const result = (await redis.eval(HIT_SCRIPT, [keyFor(id)], [String(INACTIVE_TTL_SECONDS)])) as [number, string, string, string] | null
       if (!result) return null
       const [count, theme, css, minDigits] = result
       return { count: Number(count), theme, css: css ?? '', minDigits: Number(minDigits) }
