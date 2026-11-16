@@ -65,12 +65,48 @@ function initEditPage() {
     const preview = document.querySelector("#preview");
     const status = document.querySelector("#status");
     const submitButton = form.querySelector('button[type="submit"]');
+    const cssField = form.elements.css;
+    const resetButton = document.querySelector("#reset-css");
+    const resetStatus = document.querySelector("#reset-status");
     const counterId = document.body.dataset.counterId;
     const editToken = location.pathname.split("/").filter(Boolean).pop();
 
     let previewTimer;
     let previewUrl;
     let countWasEdited = false;
+    let selectedTheme = form.elements.theme.value;
+
+    const themeInput = (name) =>
+        form.querySelector(`input[name="theme"][value="${CSS.escape(name)}"]`);
+
+    const themeCss = (name) => themeInput(name).dataset.css;
+
+    function hasCustomCss() {
+        const css = cssField.value.trim();
+        return css !== "" && css !== themeCss(selectedTheme).trim();
+    }
+
+    function useThemeCss() {
+        cssField.value = themeCss(selectedTheme);
+        resetButton.hidden = true;
+    }
+
+    function changeTheme(input) {
+        const keepCustomCss =
+            hasCustomCss() &&
+            !confirm(
+                "You have made custom changes. They will be overwritten. Continue?",
+            );
+        if (keepCustomCss) {
+            const previousInput = themeInput(selectedTheme);
+            previousInput.checked = true;
+            // arrow keys move focus along with the selection
+            previousInput.focus();
+            return;
+        }
+        selectedTheme = input.value;
+        useThemeCss();
+    }
 
     function readForm() {
         const data = new FormData(form);
@@ -83,14 +119,16 @@ function initEditPage() {
     }
 
     function fillForm(counter) {
-        const themeInput = form.querySelector(
-            `input[name="theme"][value="${CSS.escape(counter.theme)}"]`,
-        );
-        if (themeInput) themeInput.checked = true;
+        const savedThemeInput = themeInput(counter.theme);
+        if (savedThemeInput) {
+            savedThemeInput.checked = true;
+            selectedTheme = counter.theme;
+        }
         form.elements.minDigits.value = counter.minDigits;
         form.elements.count.value = counter.count;
-        form.elements.css.value = counter.css;
-        if (counter.css) form.querySelector("details").open = true;
+        cssField.value = counter.css || themeCss(selectedTheme);
+        resetButton.hidden = !hasCustomCss();
+        if (hasCustomCss()) form.querySelector("details").open = true;
     }
 
     async function refreshPreview() {
@@ -109,6 +147,8 @@ function initEditPage() {
 
     async function saveCounter() {
         const { count, ...config } = readForm();
+        // an untouched theme is saved as empty css so it keeps following the theme
+        if (!hasCustomCss()) config.css = "";
         // sending an untouched count would overwrite hits that arrived while editing
         const changes = countWasEdited ? { ...config, count } : config;
         const response = await sendJson(
@@ -119,7 +159,7 @@ function initEditPage() {
         );
         if (!response.ok) throw new Error(await errorMessage(response));
         countWasEdited = false;
-        return "Saved. Your counter now uses the new look.";
+        return "Saved.";
     }
 
     async function loadCounter() {
@@ -138,6 +178,24 @@ function initEditPage() {
 
     form.addEventListener("input", (event) => {
         if (event.target.name === "count") countWasEdited = true;
+        if (event.target.name === "theme") changeTheme(event.target);
+        resetButton.hidden = !hasCustomCss();
+        status.textContent = "";
+        // an unchanged live region would stay silent on the next reset
+        resetStatus.textContent = "";
+        schedulePreview();
+    });
+
+    resetButton.addEventListener("click", () => {
+        if (
+            !confirm(
+                "You have made custom changes. They will be removed. Continue?",
+            )
+        )
+            return;
+        useThemeCss();
+        cssField.focus();
+        resetStatus.textContent = "Custom changes removed.";
         schedulePreview();
     });
 

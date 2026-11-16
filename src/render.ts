@@ -109,7 +109,7 @@ export function renderCounter(count: number, theme: Theme, options: RenderOption
   const width = padding * 2 + digits.length * digitWidth + (digits.length - 1) * gap
   const height = padding * 2 + digitHeight
   const polygons = segmentPolygons(digitWidth, digitHeight)
-  const css = options.css?.trim() ? `${theme.css}\n${options.css}` : theme.css
+  const css = options.css?.trim() ? options.css : theme.css
 
   const renderedDigits = [...digits]
     .map((digit, index) => renderDigit(digit, padding + index * (digitWidth + gap), padding, theme, polygons))

@@ -102,6 +102,15 @@ form,
     margin: 0;
 }
 
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
 [hidden] {
     display: none;
 }
@@ -111,6 +120,9 @@ form,
     place-items: center;
     /*min-height: 96px;*/
     overflow-x: auto;
+    position: sticky;
+    top: 0;
+    z-index: 1;
 }
 
 .site-counter {
@@ -213,52 +225,24 @@ textarea {
 }
 
 details {
-    display: grid;
-    gap: 8px;
-}
-
-details > * + * {
-    margin-top: 8px;
-}
-
-summary {
-    cursor: pointer;
-    font-weight: bold;
-}
-
-details p {
-    margin-bottom: 0;
-    font-size: 14px;
-}
-
-.css-help {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
+    border: 2px groove var(--panel-light);
     background: #d8d8d8;
 }
 
-.css-help caption {
-    padding-bottom: 4px;
-    font-weight: bold;
-    text-align: left;
+.customize {
+    display: grid;
+    gap: 4px;
 }
 
-.css-help th,
-.css-help td {
-    padding: 4px 8px;
-    text-align: left;
-    vertical-align: top;
-    border: 1px solid var(--panel-dark);
+details textarea {
+    display: block;
+    border-width: 2px 0 0;
+    border-color: var(--panel-dark);
 }
 
-.css-help th {
-    font-weight: normal;
-    white-space: nowrap;
-}
-
-code {
-    font-family: inherit;
+summary {
+    padding: 8px 12px;
+    cursor: pointer;
     font-weight: bold;
 }
 
@@ -294,6 +278,21 @@ button:disabled {
     color: var(--panel-dark);
     text-shadow: 1px 1px 0 var(--panel-light);
     cursor: not-allowed;
+}
+
+button.text-button,
+button.text-button:hover:not(:disabled),
+button.text-button:active:not(:disabled) {
+    justify-self: end;
+    padding: 0;
+    background: none;
+    border: 0;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+form > button.primary {
+    margin-top: 8px;
 }
 
 button.primary {

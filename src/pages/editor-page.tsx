@@ -3,16 +3,6 @@ import { defaultTheme, themeList } from "../themes";
 import { MAX_COUNT, MAX_CSS_LENGTH } from "../validate";
 import { Layout } from "./layout";
 
-const CSS_CLASSES = [
-    [".frame", "the outer box"],
-    [".digit", 'one group per digit, has data-value="0" to "9"'],
-    [".digit-bg", "the box behind each digit"],
-    [".digit-text", "the digit as text"],
-    [".segments", "the 7-segment display, hidden unless you show it"],
-    [".seg.on, .seg.off", "lit and unlit segments (also .seg-a to .seg-g)"],
-    [".digit-shade", "odometer-style shading, hidden unless you show it"],
-];
-
 export function EditorPage({ counterId }: { counterId: string }) {
     return (
         <Layout
@@ -31,27 +21,6 @@ export function EditorPage({ counterId }: { counterId: string }) {
             </section>
 
             <form id="counter-form" class="panel">
-                <fieldset>
-                    <legend>Theme</legend>
-                    <div class="theme-grid">
-                        {themeList.map((theme) => (
-                            <label class="theme-option">
-                                <input
-                                    type="radio"
-                                    name="theme"
-                                    value={theme.name}
-                                    checked={theme === defaultTheme}
-                                />
-                                <img
-                                    src={`/preview.svg?theme=${theme.name}`}
-                                    alt=""
-                                />
-                                <span>{theme.label}</span>
-                            </label>
-                        ))}
-                    </div>
-                </fieldset>
-
                 <fieldset class="row">
                     <legend>Numbers</legend>
                     <label>
@@ -78,35 +47,58 @@ export function EditorPage({ counterId }: { counterId: string }) {
                     </label>
                 </fieldset>
 
-                <details>
-                    <summary>Custom CSS</summary>
-                    <p>Tweak the selected theme with your own CSS.</p>
-                    <textarea
-                        name="css"
-                        rows={8}
-                        maxlength={MAX_CSS_LENGTH}
-                        spellcheck={false}
-                        placeholder=".digit-text { fill: hotpink; }"
-                    />
-                    <table class="css-help">
-                        <caption>Classes you can style</caption>
-                        <tbody>
-                            {CSS_CLASSES.map(([selector, description]) => (
-                                <tr>
-                                    <th scope="row">
-                                        <code>{selector}</code>
-                                    </th>
-                                    <td>{description}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </details>
+                <fieldset>
+                    <legend>Theme</legend>
+                    <div class="theme-grid">
+                        {themeList.map((theme) => (
+                            <label class="theme-option">
+                                <input
+                                    type="radio"
+                                    name="theme"
+                                    value={theme.name}
+                                    data-css={theme.css}
+                                    checked={theme === defaultTheme}
+                                />
+                                <img
+                                    src={`/preview.svg?theme=${theme.name}`}
+                                    alt=""
+                                />
+                                <span>{theme.label}</span>
+                            </label>
+                        ))}
+                    </div>
+                </fieldset>
+
+                <div class="customize">
+                    <details>
+                        <summary>Customize theme</summary>
+                        <textarea
+                            name="css"
+                            aria-label="CSS"
+                            rows={14}
+                            maxlength={MAX_CSS_LENGTH}
+                            spellcheck={false}
+                            autocapitalize="off"
+                            autocorrect="off"
+                        >
+                            {defaultTheme.css}
+                        </textarea>
+                    </details>
+                    <button
+                        type="button"
+                        id="reset-css"
+                        class="text-button"
+                        hidden
+                    >
+                        Reset styles
+                    </button>
+                </div>
 
                 <button type="submit" class="primary">
                     Save changes
                 </button>
                 <p id="status" class="status" role="status" />
+                <p id="reset-status" class="sr-only" role="status" />
             </form>
 
             <section class="panel">

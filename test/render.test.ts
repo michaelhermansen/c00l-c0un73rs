@@ -34,10 +34,14 @@ describe('renderCounter', () => {
     expect(renderCounter(7, themes.lcd, { minDigits: 1 })).toContain('aria-label="0007"')
   })
 
-  it('adds custom css after the theme css so it overrides it', () => {
+  it('uses custom css instead of the theme css', () => {
     const svg = renderCounter(1, themes.lcd, { css: '.frame { fill: hotpink; }' })
-    expect(svg.indexOf('hotpink')).toBeGreaterThan(svg.indexOf('#5dff7a'))
-    expect(svg).toContain('#5dff7a')
+    expect(svg).toContain('hotpink')
+    expect(svg).not.toContain('#5dff7a')
+  })
+
+  it('keeps the base css when custom css is used', () => {
+    expect(renderCounter(1, themes.lcd, { css: '.frame { fill: hotpink; }' })).toContain('text-anchor: middle')
   })
 
   it('falls back to the theme css when custom css is blank', () => {

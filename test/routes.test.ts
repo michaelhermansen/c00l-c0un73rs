@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from 'bun:test'
 import { createApp } from '../src/routes'
 import { createMemoryStore } from '../src/store'
+import { themeList } from '../src/themes'
 import { MAX_CSS_LENGTH } from '../src/validate'
 
 let app: ReturnType<typeof createApp>
@@ -147,6 +148,12 @@ describe('pages', () => {
     const response = await app.request(`/edit/${id}/${token}`)
     expect(response.status).toBe(200)
     expect(await response.text()).toContain(`data-counter-id="${id}"`)
+  })
+
+  it('gives the edit page every theme stylesheet', async () => {
+    const { id, token } = await createCounter()
+    const html = await (await app.request(`/edit/${id}/${token}`)).text()
+    expect([...html.matchAll(/ data-css="/g)].length).toBe(themeList.length)
   })
 
   it('returns 404 for an edit link without the right key', async () => {
