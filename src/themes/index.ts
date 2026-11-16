@@ -1,10 +1,10 @@
-import type { Theme } from './types'
-import { lcd } from './lcd'
-import { odometer } from './odometer'
-import { webmaster } from './webmaster'
-import { neon } from './neon'
-import { nixie } from './nixie'
-import { splitflap } from './splitflap'
+import type { Theme } from './types.ts'
+import { lcd } from './lcd.ts'
+import { odometer } from './odometer.ts'
+import { webmaster } from './webmaster.ts'
+import { neon } from './neon.ts'
+import { nixie } from './nixie.ts'
+import { splitflap } from './splitflap.ts'
 
 export type { Theme }
 

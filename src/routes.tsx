@@ -1,14 +1,14 @@
 import { Hono } from 'hono'
 import type { Context } from 'hono'
-import { EditorPage } from './pages/editor-page'
-import { HomePage } from './pages/home-page'
-import { NotFoundPage } from './pages/not-found-page'
-import { DEFAULT_MIN_DIGITS, MAX_MIN_DIGITS, renderCounter } from './render'
-import { SITE_COUNTER_ID } from './site-counter'
-import type { CounterStore } from './store'
-import { defaultTheme, themes } from './themes'
-import { generateId, generateToken, hashToken } from './token'
-import { validateCounterInput } from './validate'
+import { EditorPage } from './pages/editor-page.tsx'
+import { HomePage } from './pages/home-page.tsx'
+import { NotFoundPage } from './pages/not-found-page.tsx'
+import { DEFAULT_MIN_DIGITS, MAX_MIN_DIGITS, renderCounter } from './render.ts'
+import { SITE_COUNTER_ID } from './site-counter.ts'
+import type { CounterStore } from './store.ts'
+import { defaultTheme, themes } from './themes/index.ts'
+import { generateId, generateToken, hashToken } from './token.ts'
+import { validateCounterInput } from './validate.ts'
 
 const PREVIEW_COUNT = 1234567
 

@@ -1,5 +1,5 @@
 import { Redis } from '@upstash/redis'
-import type { CounterState, CounterStore, StoredCounter } from './store'
+import type { CounterState, CounterStore, StoredCounter } from './store.ts'
 
 // one round trip per hit, and unknown ids never create keys
 const HIT_SCRIPT = `

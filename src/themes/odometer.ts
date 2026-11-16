@@ -1,4 +1,4 @@
-import { standardGeometry, type Theme } from './types'
+import { standardGeometry, type Theme } from './types.ts'
 
 export const odometer: Theme = {
   name: 'odometer',

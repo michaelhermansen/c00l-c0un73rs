@@ -1,4 +1,4 @@
-import type { Theme } from './themes'
+import type { Theme } from './themes/index.ts'
 
 export const MIN_MIN_DIGITS = 4
 export const MAX_MIN_DIGITS = 12

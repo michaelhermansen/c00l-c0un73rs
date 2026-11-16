@@ -1,6 +1,6 @@
-import { MAX_MIN_DIGITS, MIN_MIN_DIGITS } from './render'
-import type { CounterState } from './store'
-import { themes } from './themes'
+import { MAX_MIN_DIGITS, MIN_MIN_DIGITS } from './render.ts'
+import type { CounterState } from './store.ts'
+import { themes } from './themes/index.ts'
 
 export const MAX_CSS_LENGTH = 10_000
 export const MAX_COUNT = 999_999_999_999

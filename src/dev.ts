@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
-import { servePublicFiles } from './public-files'
-import { createApp } from './routes'
-import { createMemoryStore } from './store'
+import { servePublicFiles } from './public-files.ts'
+import { createApp } from './routes.tsx'
+import { createMemoryStore } from './store.ts'
 
 const store = createMemoryStore()
 
