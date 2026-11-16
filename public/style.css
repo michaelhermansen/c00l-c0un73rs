@@ -50,7 +50,7 @@ h1 {
 h1 a {
     color: var(--accent);
     text-decoration: none;
-    text-shadow: 2px 2px 0px var(--ink);
+    text-shadow: 4px 4px 4px rgba(0, 0, 0, 0.5);
 }
 
 h2 {
@@ -203,7 +203,9 @@ legend {
     gap: var(--row-gap);
     padding: var(--padding);
     /* half a row peeks out to show there is more to scroll to */
-    max-height: calc(var(--padding) + 2.5 * var(--row-height) + 2 * var(--row-gap));
+    max-height: calc(
+        var(--padding) + 2.5 * var(--row-height) + 2 * var(--row-gap)
+    );
     overflow-y: auto;
 }
 
