@@ -1,3 +1,4 @@
+import { replaceCssFilterFunctions } from './css-filters'
 import type { Theme } from './themes'
 
 export const MIN_MIN_DIGITS = 4
@@ -109,7 +110,7 @@ export function renderCounter(count: number, theme: Theme, options: RenderOption
   const width = padding * 2 + digits.length * digitWidth + (digits.length - 1) * gap
   const height = padding * 2 + digitHeight
   const polygons = segmentPolygons(digitWidth, digitHeight)
-  const css = options.css?.trim() ? options.css : theme.css
+  const filters = replaceCssFilterFunctions(options.css?.trim() ? options.css : theme.css, { width, height })
 
   const renderedDigits = [...digits]
     .map((digit, index) => renderDigit(digit, padding + index * (digitWidth + gap), padding, theme, polygons))
@@ -122,8 +123,8 @@ export function renderCounter(count: number, theme: Theme, options: RenderOption
     `<stop offset="0.35" stop-color="#000" stop-opacity="0"/>` +
     `<stop offset="0.65" stop-color="#000" stop-opacity="0"/>` +
     `<stop offset="1" stop-color="#000" stop-opacity="0.6"/>` +
-    `</linearGradient></defs>` +
-    `<style>${escapeXml(`${BASE_CSS}\n${css}`)}</style>` +
+    `</linearGradient>${filters.defs}</defs>` +
+    `<style>${escapeXml(`${BASE_CSS}\n${filters.css}`)}</style>` +
     `<rect class="frame" width="${width}" height="${height}"/>` +
     renderedDigits +
     `</svg>`
