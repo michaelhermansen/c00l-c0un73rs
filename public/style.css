@@ -30,7 +30,7 @@ body {
 main {
     width: 100%;
     max-width: 640px;
-    margin: 0 auto;
+    margin: 0 auto 32px;
     display: grid;
     gap: 8px;
 }
@@ -63,19 +63,38 @@ h2 {
 }
 
 footer {
-    margin-top: auto;
-    padding-top: 16px;
-    text-align: center;
+    width: 100%;
+    max-width: 640px;
+    margin: auto auto 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    padding: 2px;
     font-size: 12px;
-    color: var(--panel);
+    background: var(--panel);
+    border: 2px solid;
+    border-color: var(--panel-light) var(--panel-dark) var(--panel-dark)
+        var(--panel-light);
 }
 
-footer p {
+footer > * {
     margin: 0;
+    padding: 2px 8px;
+    border: 1px solid;
+    border-color: var(--panel-dark) var(--panel-light) var(--panel-light)
+        var(--panel-dark);
+}
+
+.footer-notes {
+    flex: 1 1 320px;
+}
+
+.languages > * + * {
+    margin-left: 8px;
 }
 
 footer a {
-    color: var(--accent);
+    color: var(--link);
 }
 
 form,

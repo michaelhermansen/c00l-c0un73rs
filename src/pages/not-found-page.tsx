@@ -1,20 +1,20 @@
+import { messages, type Locale } from "../i18n";
 import { Layout } from "./layout";
 
-export function NotFoundPage() {
+export function NotFoundPage({ locale }: { locale: Locale }) {
+    const t = messages[locale.lang];
     return (
         <Layout
-            title="c001 c0un73rz | Not found"
-            tagline="404 not found"
+            locale={locale}
+            title={t.notFoundTitle}
+            tagline={t.notFoundTagline}
             page="not-found"
         >
             <section class="panel">
-                <h2>Nothing here</h2>
+                <h2>{t.notFoundHeading}</h2>
+                <p>{t.notFoundText}</p>
                 <p>
-                    This page or counter does not exist. Check the link, or
-                    start over from the front page.
-                </p>
-                <p>
-                    <a href="/">Back to the front page</a>
+                    <a href={locale.prefix || "/"}>{t.backToFront}</a>
                 </p>
             </section>
         </Layout>

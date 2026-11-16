@@ -162,6 +162,50 @@ describe('pages', () => {
     expect((await app.request(`/edit/${id}/wrong`)).status).toBe(404)
   })
 
+  it('serves norwegian to norwegian ip addresses and english to others', async () => {
+    const page = async (country: string) =>
+      (await app.request('/', { headers: { 'x-vercel-ip-country': country } })).text()
+    expect(await page('NO')).toContain('<html lang="nb">')
+    expect(await page('NO')).toContain('Lag en ny teller')
+    expect(await page('DE')).toContain('<html lang="en">')
+    expect(await page('DE')).toContain('Create a new counter')
+  })
+
+  it('lets a language in the url win over the ip address', async () => {
+    const html = await (await app.request('/en', { headers: { 'x-vercel-ip-country': 'NO' } })).text()
+    expect(html).toContain('Create a new counter')
+    expect(await (await app.request('/no')).text()).toContain('Lag en ny teller')
+  })
+
+  it('links to the same page in the other language', async () => {
+    const { id, token } = await createCounter()
+    const html = await (await app.request(`/no/edit/${id}/${token}`)).text()
+    expect(html).toContain('Lagre endringer')
+    expect(html).toContain(`href="/en/edit/${id}/${token}"`)
+    expect(html).toContain('data-lang-prefix="/no"')
+  })
+
+  it.each(['en', 'no'])('serves the edit page under /%s', async (lang) => {
+    const { id, token } = await createCounter()
+    const response = await app.request(`/${lang}/edit/${id}/${token}`)
+    expect(response.status).toBe(200)
+    expect(await response.text()).toContain('data-page="edit"')
+  })
+
+  it('points search engines to each language of a page', async () => {
+    const html = await (await app.request('http://site.test/no')).text()
+    expect(html).toContain('<link rel="alternate" hreflang="nb" href="http://site.test/no"/>')
+    expect(html).toContain('<link rel="alternate" hreflang="en" href="http://site.test/en"/>')
+    expect(html).toContain('<link rel="alternate" hreflang="x-default" href="http://site.test/"/>')
+    expect(await (await app.request('/nope')).text()).not.toContain('hreflang="x-default"')
+  })
+
+  it('answers 404 pages in the language of the url', async () => {
+    const response = await app.request('/no/nope')
+    expect(response.status).toBe(404)
+    expect(await response.text()).toContain('Ingenting her')
+  })
+
   it.each(['/edit/doesnotexist/abc', '/edit', '/nope'])('returns a 404 page for %s', async (path) => {
     const response = await app.request(path)
     expect(response.status).toBe(404)

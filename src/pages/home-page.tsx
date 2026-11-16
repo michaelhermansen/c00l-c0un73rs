@@ -1,26 +1,29 @@
+import { messages, type Locale } from "../i18n";
 import { SITE_COUNTER_ID } from "../site-counter";
 import { Layout } from "./layout";
 
-export function HomePage() {
+export function HomePage({ locale }: { locale: Locale }) {
+    const t = messages[locale.lang];
     return (
         <Layout
-            title="c001 c0un73rz | Visitor counter for your web site"
-            tagline="Get a cool counter for your web site"
+            locale={locale}
+            title={t.homeTitle}
+            tagline={t.homeTagline}
             page="home"
         >
             <section class="panel">
-                <h2>Create a new counter</h2>
-                <p>Select a theme and customize it on the next page.</p>
+                <h2>{t.createHeading}</h2>
+                <p>{t.createIntro}</p>
                 <button type="button" id="create-counter" class="primary">
-                    Create counter
+                    {t.createButton}
                 </button>
                 <p id="create-status" class="status" role="status" />
             </section>
 
             <form id="open-counter-form" class="panel">
-                <h2>Edit an existing counter</h2>
+                <h2>{t.openHeading}</h2>
                 <label>
-                    Your edit link
+                    {t.openLabel}
                     <input
                         type="text"
                         name="reference"
@@ -31,13 +34,13 @@ export function HomePage() {
                     />
                 </label>
                 <button type="submit" class="primary">
-                    Edit counter
+                    {t.openButton}
                 </button>
                 <p id="open-status" class="status" role="status" />
             </form>
 
             <section class="site-counter">
-                <p class="counter-caption">Number of visitors</p>
+                <p class="counter-caption">{t.visitors}</p>
                 <img alt="" src={`/c/${SITE_COUNTER_ID}.svg`} />
             </section>
         </Layout>

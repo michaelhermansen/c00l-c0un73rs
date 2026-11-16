@@ -1,5 +1,7 @@
 const PREVIEW_DEBOUNCE_MS = 200;
 
+const messages = JSON.parse(document.body.dataset.messages);
+
 // matches a full edit link or just its "id/key" ending
 const EDIT_LINK = /(?:^|\/)([a-z0-9]+)\/([0-9a-f]+)\/?$/i;
 
@@ -13,12 +15,13 @@ function sendJson(url, method, body, headers = {}) {
 
 async function errorMessage(response) {
     const body = await response.json().catch(() => null);
-    return body?.error ?? `request failed (${response.status})`;
+    return body?.error ?? `${messages.requestFailed} (${response.status})`;
 }
 
 const authorization = (token) => ({ Authorization: `Bearer ${token}` });
 
-const editPath = (id, token) => `/edit/${id}/${token}`;
+const editPath = (id, token) =>
+    `${document.body.dataset.langPrefix}/edit/${id}/${token}`;
 
 async function canEdit(id, token) {
     const response = await fetch(`/api/counters/${id}/access`, {
@@ -46,17 +49,22 @@ function initHomePage() {
         location.href = editPath(id, token);
     });
 
+    // going back restores the page as it was left, with the button still disabled
+    window.addEventListener("pageshow", () => {
+        createButton.disabled = false;
+    });
+
     openForm.addEventListener("submit", async (event) => {
         event.preventDefault();
         openStatus.textContent = "";
         const match = openForm.elements.reference.value.trim().match(EDIT_LINK);
         if (!match) {
-            openStatus.textContent = "That does not look like an edit link.";
+            openStatus.textContent = messages.notAnEditLink;
             return;
         }
         const [, id, token] = match;
         if (await canEdit(id, token)) location.href = editPath(id, token);
-        else openStatus.textContent = "No counter found for that edit link.";
+        else openStatus.textContent = messages.noCounterFound;
     });
 }
 
@@ -93,10 +101,7 @@ function initEditPage() {
 
     function changeTheme(input) {
         const keepCustomCss =
-            hasCustomCss() &&
-            !confirm(
-                "You have made custom changes. They will be overwritten. Continue?",
-            );
+            hasCustomCss() && !confirm(messages.confirmThemeChange);
         if (keepCustomCss) {
             const previousInput = themeInput(selectedTheme);
             previousInput.checked = true;
@@ -159,12 +164,12 @@ function initEditPage() {
         );
         if (!response.ok) throw new Error(await errorMessage(response));
         countWasEdited = false;
-        return "Saved.";
+        return messages.saved;
     }
 
     async function loadCounter() {
         document.querySelector("#embed-code").value =
-            `<a href="${location.origin}/"><img src="${location.origin}/c/${counterId}.svg" alt="visitor counter"></a>`;
+            `<a href="${location.origin}/"><img src="${location.origin}/c/${counterId}.svg" alt="${messages.embedAlt}"></a>`;
         document.querySelector("#edit-link").value = location.href;
 
         const response = await fetch(`/api/counters/${counterId}`);
@@ -187,15 +192,10 @@ function initEditPage() {
     });
 
     resetButton.addEventListener("click", () => {
-        if (
-            !confirm(
-                "You have made custom changes. They will be removed. Continue?",
-            )
-        )
-            return;
+        if (!confirm(messages.confirmReset)) return;
         useThemeCss();
         cssField.focus();
-        resetStatus.textContent = "Custom changes removed.";
+        resetStatus.textContent = messages.changesRemoved;
         schedulePreview();
     });
 

@@ -1,6 +1,7 @@
 import { Hono } from 'hono'
 import type { Context } from 'hono'
 import { EditorPage } from './pages/editor-page'
+import { LANGS, readLocale } from './i18n'
 import { HomePage } from './pages/home-page'
 import { NotFoundPage } from './pages/not-found-page'
 import { DEFAULT_MIN_DIGITS, MAX_MIN_DIGITS, renderCounter } from './render'
@@ -25,6 +26,10 @@ function svgResponse(c: Context, svg: string) {
   return c.body(svg, 200, SVG_HEADERS)
 }
 
+function localeOf(c: Context) {
+  return readLocale(c.req.url, c.req.header('x-vercel-ip-country'), c.req.header('accept-language'))
+}
+
 async function readJson(c: Context): Promise<unknown> {
   return c.req.json().catch(() => null)
 }
@@ -43,17 +48,21 @@ async function startSiteCounter(store: CounterStore) {
 }
 
 export function createApp(getStore: () => CounterStore) {
-  const app = new Hono()
+  const app = new Hono({ strict: false })
 
-  app.notFound((c) => c.html(<NotFoundPage />, 404))
+  app.notFound((c) => c.html(<NotFoundPage locale={localeOf(c)} />, 404))
 
-  app.get('/', (c) => c.html(<HomePage />))
+  const langPrefixes = ['', ...LANGS.map((lang) => `/${lang}`)]
 
-  app.get('/edit/:id/:token', async (c) => {
-    const { id, token } = c.req.param()
+  app.on('GET', langPrefixes.map((prefix) => prefix || '/'), (c) => c.html(<HomePage locale={localeOf(c)} />))
+
+  app.on('GET', langPrefixes.map((prefix) => `${prefix}/edit/:id/:token`), async (c) => {
+    // paths built at runtime lose their param types
+    const { id, token } = c.req.param() as { id: string; token: string }
+    const locale = localeOf(c)
     const counter = await getStore().get(id)
-    if (!counter || (await hashToken(token)) !== counter.tokenHash) return c.html(<NotFoundPage />, 404)
-    return c.html(<EditorPage counterId={id} />)
+    if (!counter || (await hashToken(token)) !== counter.tokenHash) return c.html(<NotFoundPage locale={locale} />, 404)
+    return c.html(<EditorPage locale={locale} counterId={id} />)
   })
 
   app.get('/c/:file', async (c) => {

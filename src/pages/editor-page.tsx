@@ -1,30 +1,39 @@
 import { DEFAULT_MIN_DIGITS, MAX_MIN_DIGITS, MIN_MIN_DIGITS } from "../render";
+import { messages, type Locale } from "../i18n";
 import { defaultTheme, themeList } from "../themes";
 import { MAX_COUNT, MAX_CSS_LENGTH } from "../validate";
 import { Layout } from "./layout";
 
-export function EditorPage({ counterId }: { counterId: string }) {
+export function EditorPage({
+    locale,
+    counterId,
+}: {
+    locale: Locale;
+    counterId: string;
+}) {
+    const t = messages[locale.lang];
     return (
         <Layout
-            title="c001 c0un73rz | Edit your counter"
-            tagline="Change the look of your counter"
+            locale={locale}
+            title={t.editTitle}
+            tagline={t.editTagline}
             page="edit"
             counterId={counterId}
         >
             <section class="preview-box">
-                <p class="counter-caption">Counter preview</p>
+                <p class="counter-caption">{t.previewCaption}</p>
                 <img
                     id="preview"
-                    alt="counter preview"
+                    alt={t.previewAlt}
                     src={`/preview.svg?theme=${defaultTheme.name}`}
                 />
             </section>
 
             <form id="counter-form" class="panel">
                 <fieldset class="row">
-                    <legend>Numbers</legend>
+                    <legend>{t.numbers}</legend>
                     <label>
-                        Minimum digits
+                        {t.minDigits}
                         <input
                             type="number"
                             name="minDigits"
@@ -35,7 +44,7 @@ export function EditorPage({ counterId }: { counterId: string }) {
                         />
                     </label>
                     <label>
-                        Current count
+                        {t.currentCount}
                         <input
                             type="number"
                             name="count"
@@ -48,7 +57,7 @@ export function EditorPage({ counterId }: { counterId: string }) {
                 </fieldset>
 
                 <fieldset>
-                    <legend>Theme</legend>
+                    <legend>{t.theme}</legend>
                     <div class="theme-grid">
                         {themeList.map((theme) => (
                             <label class="theme-option">
@@ -71,7 +80,7 @@ export function EditorPage({ counterId }: { counterId: string }) {
 
                 <div class="customize">
                     <details>
-                        <summary>Customize theme</summary>
+                        <summary>{t.customizeTheme}</summary>
                         <textarea
                             name="css"
                             aria-label="CSS"
@@ -90,21 +99,21 @@ export function EditorPage({ counterId }: { counterId: string }) {
                         class="text-button"
                         hidden
                     >
-                        Reset styles
+                        {t.resetStyles}
                     </button>
                 </div>
 
                 <button type="submit" class="primary">
-                    Save changes
+                    {t.saveChanges}
                 </button>
                 <p id="status" class="status" role="status" />
                 <p id="reset-status" class="sr-only" role="status" />
             </form>
 
             <section class="panel">
-                <h2>Your counter</h2>
+                <h2>{t.yourCounter}</h2>
                 <label>
-                    Paste this where you want the counter
+                    {t.embedLabel}
                     <textarea
                         id="embed-code"
                         class="copyable"
@@ -113,7 +122,7 @@ export function EditorPage({ counterId }: { counterId: string }) {
                     />
                 </label>
                 <label>
-                    Your secret edit link
+                    {t.editLinkLabel}
                     <input
                         id="edit-link"
                         class="copyable"
@@ -121,10 +130,7 @@ export function EditorPage({ counterId }: { counterId: string }) {
                         readonly
                     />
                 </label>
-                <p class="warning">
-                    Save the edit link. It is the only way to change this
-                    counter later, and it cannot be recovered.
-                </p>
+                <p class="warning">{t.editLinkWarning}</p>
             </section>
         </Layout>
     );
