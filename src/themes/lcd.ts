@@ -5,10 +5,10 @@ export const lcd: Theme = {
   label: 'LCD',
   ...standardGeometry,
   css: `.frame {
-  fill: #1a1f1a;
+  fill: #8fa07a;
 }
 .digit-bg {
-  fill: #0d120d;
+  fill: #a9ba8f;
 }
 .digit-text {
   display: none;
@@ -17,9 +17,9 @@ export const lcd: Theme = {
   display: inline;
 }
 .seg {
-  fill: #16301a;
+  fill: #9dae84;
 }
 .seg.on {
-  fill: #5dff7a;
+  fill: #1f2e1c;
 }`,
 }

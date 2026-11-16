@@ -37,7 +37,7 @@ describe('renderCounter', () => {
   it('uses custom css instead of the theme css', () => {
     const svg = renderCounter(1, themes.lcd, { css: '.frame { fill: hotpink; }' })
     expect(svg).toContain('hotpink')
-    expect(svg).not.toContain('#5dff7a')
+    expect(svg).not.toContain('#1f2e1c')
   })
 
   it('keeps the base css when custom css is used', () => {
@@ -45,7 +45,7 @@ describe('renderCounter', () => {
   })
 
   it('falls back to the theme css when custom css is blank', () => {
-    expect(renderCounter(1, themes.lcd, { css: '  ' })).toContain('#5dff7a')
+    expect(renderCounter(1, themes.lcd, { css: '  ' })).toContain('#1f2e1c')
   })
 
   it('escapes custom css so it cannot break out of the style element', () => {
