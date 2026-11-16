@@ -35,6 +35,7 @@ export function Layout({
                     content="width=device-width, initial-scale=1"
                 />
                 <title>{`c001 c0un73rz | ${title}`}</title>
+                <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
                 <link rel="stylesheet" href="/style.css" />
                 {page === "edit" && (
                     <meta name="robots" content="noindex" />

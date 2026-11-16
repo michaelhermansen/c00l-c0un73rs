@@ -54,5 +54,5 @@ src/render.ts         count + theme -> svg
 src/store.ts          store interface + in-memory store
 src/upstash-store.ts  redis store
 src/themes/           one file per theme
-public/               client script and styles
+public/               client script, styles and favicon
 ```
