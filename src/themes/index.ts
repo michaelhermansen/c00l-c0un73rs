@@ -5,10 +5,11 @@ import { webmaster } from './webmaster'
 import { neon } from './neon'
 import { nixie } from './nixie'
 import { splitflap } from './splitflap'
+import { western } from './western'
 
 export type { Theme }
 
-export const themeList: Theme[] = [lcd, odometer, webmaster, neon, splitflap, nixie]
+export const themeList: Theme[] = [lcd, odometer, webmaster, neon, splitflap, nixie, western]
 
 export const defaultTheme = lcd
 
