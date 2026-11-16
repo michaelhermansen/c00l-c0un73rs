@@ -36,6 +36,19 @@ export function Layout({
                     </header>
                     {children}
                 </main>
+                <footer>
+                    <p>
+                        No cookies or tracking. The host may log IP addresses.
+                    </p>
+                    <p>
+                        Provided as-is. Counters unused for a year are deleted.
+                    </p>
+                    <p>
+                        <a href="https://github.com/michaelhermansen/c00l-c0un73rs">
+                            GitHub
+                        </a>
+                    </p>
+                </footer>
                 <script src="/app.js" defer />
             </body>
         </html>

@@ -1,9 +1,9 @@
 # c00l c0un73rz
 
-Old-school visitor counters for web sites. Create a counter, pick a theme (or write your own CSS), and embed it with an `<img>` tag. It goes up by 1 on every page load. No accounts: each counter gets a secret edit link.
+Old-school visitor counters for web sites. Create a counter, pick a theme (or write your own CSS), and embed it with an `<img>` tag that links back to the home page. It goes up by 1 on every page load. No accounts: each counter gets a secret edit link.
 
 ```html
-<img src="https://<your-domain>/c/<id>.svg" alt="visitor counter" />
+<a href="https://<your-domain>/"><img src="https://<your-domain>/c/<id>.svg" alt="visitor counter" /></a>
 ```
 
 ## Run locally

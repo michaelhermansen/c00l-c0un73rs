@@ -124,7 +124,7 @@ function initEditPage() {
 
     async function loadCounter() {
         document.querySelector("#embed-code").value =
-            `<img src="${location.origin}/c/${counterId}.svg" alt="visitor counter">`;
+            `<a href="${location.origin}/"><img src="${location.origin}/c/${counterId}.svg" alt="visitor counter"></a>`;
         document.querySelector("#edit-link").value = location.href;
 
         const response = await fetch(`/api/counters/${counterId}`);

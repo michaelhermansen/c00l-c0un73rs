@@ -17,7 +17,7 @@ export function EditorPage({ counterId }: { counterId: string }) {
     return (
         <Layout
             title="c001 c0un73rz | Edit your counter"
-            tagline="Change the look of your counter."
+            tagline="Change the look of your counter"
             page="edit"
             counterId={counterId}
         >
@@ -116,7 +116,7 @@ export function EditorPage({ counterId }: { counterId: string }) {
                     <textarea
                         id="embed-code"
                         class="copyable"
-                        rows={2}
+                        rows={3}
                         readonly
                     />
                 </label>

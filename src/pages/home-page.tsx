@@ -5,17 +5,14 @@ export function HomePage() {
     return (
         <Layout
             title="c001 c0un73rz | Visitor counter for your web site"
-            tagline="Get a cool visitor counter for your web site. No account needed."
+            tagline="Get a cool counter for your web site"
             page="home"
         >
             <section class="panel">
                 <h2>Create a new counter</h2>
-                <p>
-                    You get a counter right away and can pick a theme or write
-                    your own CSS on the next page.
-                </p>
+                <p>Select a theme and customize it on the next page.</p>
                 <button type="button" id="create-counter" class="primary">
-                    Create new counter
+                    Create counter
                 </button>
                 <p id="create-status" class="status" role="status" />
             </section>
