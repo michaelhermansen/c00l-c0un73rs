@@ -7,7 +7,7 @@ import { NotFoundPage } from './pages/not-found-page'
 import { DEFAULT_MIN_DIGITS, MAX_MIN_DIGITS, renderCounter } from './render'
 import { SITE_COUNTER_ID } from './site-counter'
 import type { CounterStore } from './store'
-import { defaultTheme, themes } from './themes'
+import { defaultTheme, themeList, themes } from './themes'
 import { generateId, generateToken, hashToken } from './token'
 import { validateCounterInput } from './validate'
 
@@ -40,6 +40,10 @@ async function isValidToken(c: Context, tokenHash: string): Promise<boolean> {
   return (await hashToken(token)) === tokenHash
 }
 
+function randomTheme() {
+  return themeList[Math.floor(Math.random() * themeList.length)]
+}
+
 async function startSiteCounter(store: CounterStore) {
   // the token is thrown away, so nobody can edit the site's own counter
   const tokenHash = await hashToken(generateToken())
@@ -69,7 +73,7 @@ export function createApp(getStore: () => CounterStore) {
     const id = c.req.param('file').replace(/\.svg$/, '')
     const counter = (await getStore().hit(id)) ?? (id === SITE_COUNTER_ID ? await startSiteCounter(getStore()) : null)
     if (!counter) return c.text('counter not found', 404)
-    const theme = themes[counter.theme] ?? defaultTheme
+    const theme = id === SITE_COUNTER_ID ? randomTheme() : (themes[counter.theme] ?? defaultTheme)
     return svgResponse(c, renderCounter(counter.count, theme, counter))
   })
 

@@ -62,6 +62,15 @@ describe('site counter', () => {
     expect(await (await app.request('/c/site.svg')).text()).toContain('aria-label="000000000002"')
   })
 
+  it('shows a different theme from one load to the next', async () => {
+    const stylesheets = new Set<string>()
+    for (let load = 0; load < 60; load++) {
+      const svg = await (await app.request('/c/site.svg')).text()
+      stylesheets.add(svg.slice(svg.indexOf('<style>'), svg.indexOf('</style>')))
+    }
+    expect(stylesheets.size).toBeGreaterThan(1)
+  })
+
   it('is embedded on the front page', async () => {
     expect(await (await app.request('/')).text()).toContain('src="/c/site.svg"')
   })
