@@ -60,7 +60,8 @@ export function createUpstashStore(): CounterStore {
     },
     async update(id, changes: Partial<CounterState>) {
       const fields = toFields(changes)
-      if (Object.keys(fields).length > 0) await redis.hset(keyFor(id), fields)
+      if (Object.keys(fields).length === 0) return
+      await Promise.all([redis.hset(keyFor(id), fields), redis.expire(keyFor(id), INACTIVE_TTL_SECONDS)])
     },
   }
 }

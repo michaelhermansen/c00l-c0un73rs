@@ -58,3 +58,11 @@ it('renews the year to live on every hit', async () => {
   expect(script).toContain("redis.call('EXPIRE', KEYS[1], ARGV[1])")
   expect([keyCount, key, ttl]).toEqual([1, 'counter:some-id', String(ONE_YEAR_IN_SECONDS)])
 })
+
+it('renews the year to live when a counter is edited', async () => {
+  const commands = stubRedisResult(1)
+
+  await createUpstashStore().update('some-id', { theme: 'neon' })
+
+  expect(commands).toContainEqual(['expire', 'counter:some-id', ONE_YEAR_IN_SECONDS])
+})
