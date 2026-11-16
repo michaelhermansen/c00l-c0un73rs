@@ -1,0 +1,303 @@
+:root {
+    --page: darkslategray;
+    --panel: silver;
+    --panel-light: white;
+    --panel-dark: gray;
+    --ink: black;
+    --accent: khaki;
+    --link: blue;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 16px 8px 24px;
+    background: var(--page);
+    color: var(--ink);
+    font:
+        16px/1.5 Verdana,
+        Geneva,
+        Tahoma,
+        sans-serif;
+}
+
+main {
+    max-width: 640px;
+    margin: 0 auto;
+    display: grid;
+    gap: 8px;
+}
+
+header {
+    text-align: center;
+    color: var(--panel-light);
+}
+
+h1 {
+    margin: 0;
+    font-size: 40px;
+    line-height: 1.1;
+    letter-spacing: 1px;
+}
+
+h1 a {
+    color: var(--accent);
+    text-decoration: none;
+    text-shadow: 2px 2px 0px var(--ink);
+}
+
+h2 {
+    margin: 0px;
+    font-size: 18px;
+}
+
+.tagline {
+    margin: 8px 0;
+}
+
+form,
+.preview-box,
+.panel {
+    background: var(--panel);
+    border: 2px solid;
+    border-color: var(--panel-light) var(--panel-dark) var(--panel-dark)
+        var(--panel-light);
+    padding: 8px;
+}
+
+form {
+    margin: 0;
+}
+
+form,
+.panel {
+    display: grid;
+    gap: 16px;
+}
+
+.panel > p {
+    margin: 0;
+}
+
+[hidden] {
+    display: none;
+}
+
+.preview-box {
+    display: grid;
+    place-items: center;
+    /*min-height: 96px;*/
+    overflow-x: auto;
+}
+
+.site-counter {
+    display: grid;
+    justify-items: center;
+    margin-top: 16px;
+    color: var(--panel-light);
+}
+
+.site-counter img {
+    max-width: 100%;
+}
+
+.counter-caption {
+    margin: 0 0 4px;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.preview-box img {
+    max-width: 100%;
+}
+
+fieldset {
+    margin: 0;
+    padding: 12px;
+    border: 2px groove var(--panel-light);
+    min-width: 0;
+}
+
+legend {
+    padding: 0 6px;
+    font-weight: bold;
+}
+
+.theme-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 8px;
+}
+
+.theme-option {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 4px 8px;
+    padding: 8px;
+    cursor: pointer;
+    border: 2px solid transparent;
+}
+
+.theme-option:has(input:checked) {
+    border-color: var(--panel-dark) var(--panel-light) var(--panel-light)
+        var(--panel-dark);
+    background: #d8d8d8;
+}
+
+.theme-option img {
+    max-width: 100%;
+    height: auto;
+}
+
+.theme-option span {
+    grid-column: 2;
+    font-size: 13px;
+}
+
+.row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+}
+
+label {
+    display: grid;
+    gap: 4px;
+    font-size: 14px;
+}
+
+input[type="number"],
+input[type="text"],
+textarea {
+    width: 100%;
+    padding: 6px 8px;
+    font: inherit;
+    font-size: 14px;
+    line-height: 1.4;
+    background: var(--panel-light);
+    color: var(--ink);
+    border: 2px solid;
+    border-color: var(--panel-dark) var(--panel-light) var(--panel-light)
+        var(--panel-dark);
+    border-radius: 0;
+}
+
+textarea {
+    resize: vertical;
+}
+
+details {
+    display: grid;
+    gap: 8px;
+}
+
+details > * + * {
+    margin-top: 8px;
+}
+
+summary {
+    cursor: pointer;
+    font-weight: bold;
+}
+
+details p {
+    margin-bottom: 0;
+    font-size: 14px;
+}
+
+.css-help {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    background: #d8d8d8;
+}
+
+.css-help caption {
+    padding-bottom: 4px;
+    font-weight: bold;
+    text-align: left;
+}
+
+.css-help th,
+.css-help td {
+    padding: 4px 8px;
+    text-align: left;
+    vertical-align: top;
+    border: 1px solid var(--panel-dark);
+}
+
+.css-help th {
+    font-weight: normal;
+    white-space: nowrap;
+}
+
+code {
+    font-family: inherit;
+    font-weight: bold;
+}
+
+button {
+    padding: 4px 14px;
+    font: inherit;
+    font-size: 14px;
+    color: var(--ink);
+    background: var(--panel);
+    border: 1px solid var(--ink);
+    border-radius: 0;
+    box-shadow:
+        inset 1px 1px 0 var(--panel-light),
+        inset -1px -1px 0 var(--panel-dark),
+        inset 2px 2px 0 #dfdfdf,
+        inset -2px -2px 0 #9a9a9a;
+    cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+    background: #d0d0d0;
+}
+
+button:active:not(:disabled) {
+    padding: 5px 13px 3px 15px;
+    box-shadow:
+        inset 1px 1px 0 var(--panel-dark),
+        inset -1px -1px 0 var(--panel-light),
+        inset 2px 2px 0 #9a9a9a;
+}
+
+button:disabled {
+    color: var(--panel-dark);
+    text-shadow: 1px 1px 0 var(--panel-light);
+    cursor: not-allowed;
+}
+
+button.primary {
+    justify-self: start;
+    font-weight: bold;
+}
+
+:focus-visible {
+    outline: 2px dotted var(--ink);
+    outline-offset: 2px;
+}
+
+.status {
+    margin: 0;
+    font-size: 14px;
+}
+
+.status:empty {
+    display: none;
+}
+
+.warning {
+    margin: 0;
+    padding: 8px;
+    font-size: 14px;
+    font-weight: bold;
+    background: var(--accent);
+}
