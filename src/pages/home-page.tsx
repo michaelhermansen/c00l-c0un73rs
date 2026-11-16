@@ -1,8 +1,15 @@
 import { messages, type Locale } from "../i18n";
 import { SITE_COUNTER_ID } from "../site-counter";
+import type { Theme } from "../themes";
 import { Layout } from "./layout";
 
-export function HomePage({ locale }: { locale: Locale }) {
+export function HomePage({
+    locale,
+    siteCounterTheme,
+}: {
+    locale: Locale;
+    siteCounterTheme: Theme;
+}) {
     const t = messages[locale.lang];
     return (
         <Layout
@@ -41,7 +48,13 @@ export function HomePage({ locale }: { locale: Locale }) {
 
             <section class="site-counter">
                 <p class="counter-caption">{t.visitors}</p>
-                <img alt="" src={`/c/${SITE_COUNTER_ID}.svg`} />
+                <img
+                    alt=""
+                    src={`/c/${SITE_COUNTER_ID}.svg?theme=${siteCounterTheme.name}`}
+                />
+                <p class="counter-theme">
+                    {t.theme}: {siteCounterTheme.label}
+                </p>
             </section>
         </Layout>
     );

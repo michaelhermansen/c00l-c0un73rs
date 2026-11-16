@@ -131,8 +131,26 @@ describe('site counter', () => {
     expect(stylesheets.size).toBeGreaterThan(1)
   })
 
-  it('is embedded on the front page', async () => {
-    expect(await (await app.request('/')).text()).toContain('src="/c/site.svg"')
+  it('is embedded on the front page with the theme it is named by', async () => {
+    const html = await (await app.request('/no')).text()
+    const themeName = html.match(/src="\/c\/site\.svg\?theme=([a-z0-9]+)"/)?.[1]
+    const theme = themeList.find((candidate) => candidate.name === themeName)
+    expect(theme).toBeDefined()
+    expect(html).toContain(`Tema: ${theme!.label}`)
+  })
+
+  const stylesheetOf = (svg: string) => svg.slice(svg.indexOf('<style>'), svg.indexOf('</style>'))
+
+  it('renders the theme the front page asks for', async () => {
+    const graffiti = stylesheetOf(await (await app.request('/preview.svg?theme=graffiti')).text())
+    const response = await app.request('http://site.test/c/site.svg?theme=graffiti', { headers: { Referer: 'http://site.test/' } })
+    expect(stylesheetOf(await response.text())).toBe(graffiti)
+  })
+
+  it('ignores a theme in the url of other counters', async () => {
+    const { id } = await createCounter({ theme: 'lcd' })
+    const plain = stylesheetOf(await (await app.request(`/c/${id}.svg`)).text())
+    expect(stylesheetOf(await (await app.request(`/c/${id}.svg?theme=graffiti`)).text())).toBe(plain)
   })
 })
 

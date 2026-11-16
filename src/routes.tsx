@@ -68,7 +68,9 @@ export function createApp(getStore: () => CounterStore) {
 
   const langPrefixes = ['', ...LANGS.map((lang) => `/${lang}`)]
 
-  app.on('GET', langPrefixes.map((prefix) => prefix || '/'), (c) => c.html(<HomePage locale={localeOf(c)} />))
+  app.on('GET', langPrefixes.map((prefix) => prefix || '/'), (c) =>
+    c.html(<HomePage locale={localeOf(c)} siteCounterTheme={randomTheme()} />),
+  )
 
   app.on('GET', langPrefixes.map((prefix) => `${prefix}/edit/:id/:token`), async (c) => {
     // paths built at runtime lose their param types
@@ -89,7 +91,11 @@ export function createApp(getStore: () => CounterStore) {
     if (!visit) return c.text('counter not found', 404)
     if (visit.access === 'locked') return svgResponse(c, renderLockedCounter())
     const { counter } = visit
-    const theme = id === SITE_COUNTER_ID ? randomTheme() : (themes[counter.theme] ?? defaultTheme)
+    // the front page picks the theme, so it can name the one it shows
+    const theme =
+      id === SITE_COUNTER_ID
+        ? (themes[c.req.query('theme') ?? ''] ?? randomTheme())
+        : (themes[counter.theme] ?? defaultTheme)
     return svgResponse(c, renderCounter(counter.count, theme, counter))
   })
 
