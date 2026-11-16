@@ -1,7 +1,7 @@
-import { DEFAULT_MIN_DIGITS, MAX_MIN_DIGITS, MIN_MIN_DIGITS } from "../render.ts";
-import { defaultTheme, themeList } from "../themes/index.ts";
-import { MAX_COUNT, MAX_CSS_LENGTH } from "../validate.ts";
-import { Layout } from "./layout.tsx";
+import { DEFAULT_MIN_DIGITS, MAX_MIN_DIGITS, MIN_MIN_DIGITS } from "../render";
+import { defaultTheme, themeList } from "../themes";
+import { MAX_COUNT, MAX_CSS_LENGTH } from "../validate";
+import { Layout } from "./layout";
 
 const CSS_CLASSES = [
     [".frame", "the outer box"],

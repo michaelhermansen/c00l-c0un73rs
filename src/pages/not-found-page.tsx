@@ -1,4 +1,4 @@
-import { Layout } from "./layout.tsx";
+import { Layout } from "./layout";
 
 export function NotFoundPage() {
     return (

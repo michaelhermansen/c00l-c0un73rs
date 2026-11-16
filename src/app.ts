@@ -1,8 +1,8 @@
 import { Hono } from 'hono'
-import { servePublicFiles } from './public-files.ts'
-import { createApp } from './routes.tsx'
-import type { CounterStore } from './store.ts'
-import { createUpstashStore } from './upstash-store.ts'
+import { servePublicFiles } from './public-files'
+import { createApp } from './routes'
+import type { CounterStore } from './store'
+import { createUpstashStore } from './upstash-store'
 
 let store: CounterStore | undefined
 

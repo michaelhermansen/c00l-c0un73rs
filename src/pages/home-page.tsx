@@ -1,5 +1,5 @@
-import { SITE_COUNTER_ID } from "../site-counter.ts";
-import { Layout } from "./layout.tsx";
+import { SITE_COUNTER_ID } from "../site-counter";
+import { Layout } from "./layout";
 
 export function HomePage() {
     return (

@@ -1,4 +1,4 @@
-import { standardGeometry, type Theme } from './types.ts'
+import { standardGeometry, type Theme } from './types'
 
 export const splitflap: Theme = {
   name: 'splitflap',

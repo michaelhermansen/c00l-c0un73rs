@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'bun:test'
-import { createApp } from '../src/routes.tsx'
-import { createMemoryStore } from '../src/store.ts'
-import { MAX_CSS_LENGTH } from '../src/validate.ts'
+import { createApp } from '../src/routes'
+import { createMemoryStore } from '../src/store'
+import { MAX_CSS_LENGTH } from '../src/validate'
 
 let app: ReturnType<typeof createApp>
 

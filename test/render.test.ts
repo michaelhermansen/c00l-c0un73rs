@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
-import { renderCounter } from '../src/render.ts'
-import { themeList, themes } from '../src/themes/index.ts'
+import { renderCounter } from '../src/render'
+import { themeList, themes } from '../src/themes'
 
 const countMatches = (text: string, pattern: RegExp) => [...text.matchAll(pattern)].length
 
