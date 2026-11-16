@@ -132,9 +132,12 @@ function initEditPage() {
 
     let savedForm = JSON.stringify(formToSave());
 
+    function hasUnsavedChanges() {
+        return JSON.stringify(formToSave()) !== savedForm;
+    }
+
     function showUnsavedChanges() {
-        const hasUnsavedChanges = JSON.stringify(formToSave()) !== savedForm;
-        status.textContent = hasUnsavedChanges ? messages.unsavedChanges : "";
+        status.textContent = hasUnsavedChanges() ? messages.unsavedChanges : "";
     }
 
     function fillForm(counter) {
@@ -207,6 +210,10 @@ function initEditPage() {
         schedulePreview();
     });
 
+    window.addEventListener("beforeunload", (event) => {
+        if (hasUnsavedChanges()) event.preventDefault();
+    });
+
     resetButton.addEventListener("click", () => {
         if (!confirm(messages.confirmReset)) return;
         useThemeCss();
@@ -219,7 +226,6 @@ function initEditPage() {
     form.addEventListener("submit", async (event) => {
         event.preventDefault();
         submitButton.disabled = true;
-        status.textContent = "";
         try {
             status.textContent = await saveCounter();
         } catch (error) {
