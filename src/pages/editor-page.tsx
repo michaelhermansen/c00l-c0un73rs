@@ -56,7 +56,7 @@ export function EditorPage({
                     </label>
                 </fieldset>
 
-                <fieldset>
+                <fieldset class="theme-picker">
                     <legend>{t.theme}</legend>
                     <div class="theme-grid">
                         {themeList.map((theme) => (

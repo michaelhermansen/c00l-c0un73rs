@@ -142,6 +142,7 @@ function initEditPage() {
         if (savedThemeInput) {
             savedThemeInput.checked = true;
             selectedTheme = counter.theme;
+            savedThemeInput.closest("label").scrollIntoView({ block: "nearest" });
         }
         form.elements.minDigits.value = counter.minDigits;
         form.elements.count.value = counter.count;

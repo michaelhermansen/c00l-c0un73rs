@@ -178,10 +178,26 @@ legend {
     font-weight: bold;
 }
 
+.theme-picker {
+    padding: 0;
+}
+
+.theme-picker legend {
+    margin-left: 12px;
+}
+
 .theme-grid {
+    --row-height: 81px;
+    --row-gap: 8px;
+    --padding: 12px;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 8px;
+    grid-auto-rows: var(--row-height);
+    gap: var(--row-gap);
+    padding: var(--padding);
+    /* half a row peeks out to show there is more to scroll to */
+    max-height: calc(var(--padding) + 2.5 * var(--row-height) + 2 * var(--row-gap));
+    overflow-y: auto;
 }
 
 .theme-option {
