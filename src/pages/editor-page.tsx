@@ -1,6 +1,7 @@
-import { DEFAULT_MIN_DIGITS, MAX_MIN_DIGITS, MIN_MIN_DIGITS } from "../render";
+import { MAX_MIN_DIGITS, MIN_MIN_DIGITS, renderCounter } from "../render";
 import { messages, type Locale } from "../i18n";
-import { defaultTheme, themeList } from "../themes";
+import type { CounterState } from "../store";
+import { defaultTheme, themeList, themes } from "../themes";
 import {
     MAX_ALLOWED_DOMAINS_LENGTH,
     MAX_COUNT,
@@ -11,11 +12,18 @@ import { Layout } from "./layout";
 export function EditorPage({
     locale,
     counterId,
+    counter,
 }: {
     locale: Locale;
     counterId: string;
+    counter: CounterState;
 }) {
     const t = messages[locale.lang];
+    const savedTheme = themes[counter.theme] ?? defaultTheme;
+    const hasCustomCss =
+        counter.css.trim() !== "" &&
+        counter.css.trim() !== savedTheme.css.trim();
+    const savedPreview = renderCounter(counter.count, savedTheme, counter);
     return (
         <Layout
             locale={locale}
@@ -29,7 +37,7 @@ export function EditorPage({
                 <img
                     id="preview"
                     alt={t.previewAlt}
-                    src={`/preview.svg?theme=${defaultTheme.name}`}
+                    src={`data:image/svg+xml,${encodeURIComponent(savedPreview)}`}
                 />
             </section>
 
@@ -43,7 +51,7 @@ export function EditorPage({
                             name="minDigits"
                             min={MIN_MIN_DIGITS}
                             max={MAX_MIN_DIGITS}
-                            value={DEFAULT_MIN_DIGITS}
+                            value={counter.minDigits}
                             required
                         />
                     </label>
@@ -54,7 +62,7 @@ export function EditorPage({
                             name="count"
                             min="0"
                             max={MAX_COUNT}
-                            value="0"
+                            value={counter.count}
                             required
                         />
                     </label>
@@ -70,7 +78,7 @@ export function EditorPage({
                                     name="theme"
                                     value={theme.name}
                                     data-css={theme.css}
-                                    checked={theme === defaultTheme}
+                                    checked={theme === savedTheme}
                                 />
                                 <img
                                     src={`/preview.svg?theme=${theme.name}`}
@@ -83,7 +91,7 @@ export function EditorPage({
                 </fieldset>
 
                 <div class="customize">
-                    <details>
+                    <details open={hasCustomCss}>
                         <summary>{t.customizeTheme}</summary>
                         <textarea
                             name="css"
@@ -94,14 +102,14 @@ export function EditorPage({
                             autocapitalize="off"
                             autocorrect="off"
                         >
-                            {defaultTheme.css}
+                            {counter.css || savedTheme.css}
                         </textarea>
                     </details>
                     <button
                         type="button"
                         id="reset-css"
                         class="text-button"
-                        hidden
+                        hidden={!hasCustomCss}
                     >
                         {t.resetStyles}
                     </button>
@@ -115,6 +123,7 @@ export function EditorPage({
                             type="text"
                             name="allowedDomains"
                             placeholder="example.com, example.org"
+                            value={counter.allowedDomains.replaceAll(" ", ", ")}
                             maxlength={MAX_ALLOWED_DOMAINS_LENGTH}
                             aria-describedby="allowed-domains-hint"
                             spellcheck={false}

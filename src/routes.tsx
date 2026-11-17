@@ -78,7 +78,7 @@ export function createApp(getStore: () => CounterStore) {
     const locale = localeOf(c)
     const counter = await getStore().get(id)
     if (!counter || (await hashToken(token)) !== counter.tokenHash) return c.html(<NotFoundPage locale={locale} />, 404)
-    return c.html(<EditorPage locale={locale} counterId={id} />)
+    return c.html(<EditorPage locale={locale} counterId={id} counter={counter} />)
   })
 
   app.get('/c/:file', async (c) => {

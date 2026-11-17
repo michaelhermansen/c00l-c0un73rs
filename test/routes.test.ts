@@ -240,6 +240,17 @@ describe('pages', () => {
     expect(await response.text()).toContain(`data-counter-id="${id}"`)
   })
 
+  it('renders the edit page with the saved counter instead of the defaults', async () => {
+    const { id, token } = await createCounter({ theme: 'neon', minDigits: 5, count: 42 })
+    const html = await (await app.request(`/edit/${id}/${token}`)).text()
+    const previewSrc = html.match(/id="preview"[^>]* src="([^"]+)"/)?.[1] ?? ''
+    expect(decodeURIComponent(previewSrc)).toContain('aria-label="00042"')
+    expect(html).toMatch(/<input type="radio" name="theme" value="neon"[^>]* checked/)
+    expect(html).not.toMatch(/<input type="radio" name="theme" value="lcd"[^>]* checked/)
+    expect(html).toMatch(/name="minDigits"[^>]* value="5"/)
+    expect(html).toMatch(/name="count"[^>]* value="42"/)
+  })
+
   it('gives the edit page every theme stylesheet', async () => {
     const { id, token } = await createCounter()
     const html = await (await app.request(`/edit/${id}/${token}`)).text()
