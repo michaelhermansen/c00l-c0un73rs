@@ -6,7 +6,6 @@ export const terminal: Theme = {
   ...standardGeometry,
   css: `.frame {
   fill: #031006;
-  rx: 4px;
 }
 .digit-bg {
   fill: none;
