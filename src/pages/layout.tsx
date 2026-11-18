@@ -34,7 +34,7 @@ export function Layout({
                     name="viewport"
                     content="width=device-width, initial-scale=1"
                 />
-                <title>{`c001 c0un73rz | ${title}`}</title>
+                <title>{`c00l c0un73rz | ${title}`}</title>
                 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
                 <link rel="stylesheet" href="/style.css" />
                 {page === "edit" && (
@@ -68,7 +68,7 @@ export function Layout({
                 <main>
                     <header>
                         <h1>
-                            <a href={locale.prefix || "/"}>c001 c0un73rz</a>
+                            <a href={locale.prefix || "/"}>c00l c0un73rz</a>
                         </h1>
                         <p class="tagline">{tagline}</p>
                     </header>
